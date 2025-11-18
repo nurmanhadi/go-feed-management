@@ -1,0 +1,25 @@
+services:
+  db-feed-management:
+    container_name: db-feed-management
+    hostname: db-feed-management
+    image: docker.io/library/mongo:4.4
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    volumes:
+      - mongo-data:/data/db
+
+  cache-feed-management:
+    container_name: cache-feed-management
+    hostname: cache-feed-management
+    image: docker.io/library/redis:latest
+    ports:
+      - "6379:6379"
+    volumes:
+      - cache-data:/data
+
+volumes:
+  mongo-data:
+  cache-data:
