@@ -42,4 +42,9 @@ func Initialize(deps *Bootstrap) {
 	// subcriber
 	postSubs := consumer.NewPostConsumer(deps.Logger, deps.Ch, postServ)
 	postSubs.PostCreated()
+	postSubs.PostUpdated()
+	postSubs.PostLike()
+	postSubs.PostUnlike()
+	postSubs.CommentIncrement()
+	postSubs.CommentDecrement()
 }
