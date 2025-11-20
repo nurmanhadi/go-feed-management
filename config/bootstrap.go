@@ -43,8 +43,6 @@ func Initialize(deps *Bootstrap) {
 	postSubs := consumer.NewPostConsumer(deps.Logger, deps.Ch, postServ)
 	postSubs.PostCreated()
 	postSubs.PostUpdated()
-	postSubs.PostLike()
-	postSubs.PostUnlike()
-	postSubs.CommentIncrement()
-	postSubs.CommentDecrement()
+	postSubs.LikeTotal()
+	postSubs.CommentTotal()
 }

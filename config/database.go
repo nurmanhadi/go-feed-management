@@ -10,13 +10,12 @@ import (
 
 func NewDatabase() (*mongo.Client, *mongo.Database) {
 	uri := fmt.Sprintf("mongodb://%s:%s@%s:%s",
-		os.Getenv("DB_HOST"),
 		os.Getenv("DB_USERNAME"),
 		os.Getenv("DB_PASSWORD"),
+		os.Getenv("DB_HOST"),
 		os.Getenv("DB_PORT"),
 	)
-	serveApi := options.ServerAPI(options.ServerAPIVersion1)
-	opts := options.Client().ApplyURI(uri).SetServerAPIOptions(serveApi)
+	opts := options.Client().ApplyURI(uri)
 	client, err := mongo.Connect(opts)
 	if err != nil {
 		panic(err)

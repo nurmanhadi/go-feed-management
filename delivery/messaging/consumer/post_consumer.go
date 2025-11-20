@@ -4,7 +4,6 @@ import (
 	"feed-management/internal/service"
 	"feed-management/pkg"
 	"feed-management/pkg/dto"
-	"fmt"
 
 	"github.com/goccy/go-json"
 	amqp "github.com/rabbitmq/amqp091-go"
@@ -40,7 +39,7 @@ func (c *PostConsumer) PostCreated() {
 				c.logger.Error().Err(err).Msg("failed unmarshal to payload")
 				return
 			}
-			err := c.postService.Create(&consumer.Data)
+			err := c.postService.PostCreate(&consumer.Data)
 			if err != nil {
 				return
 			}
@@ -63,12 +62,15 @@ func (c *PostConsumer) PostUpdated() {
 				c.logger.Error().Err(err).Msg("failed unmarshal to payload")
 				return
 			}
-			fmt.Println(consumer)
+			err := c.postService.PostUpdate(&consumer.Data)
+			if err != nil {
+				return
+			}
 		}
 	}()
 }
-func (c *PostConsumer) PostLike() {
-	queue, err := c.ch.QueueDeclare(pkg.QUEUE_POST_LIKE, true, false, false, false, nil)
+func (c *PostConsumer) LikeTotal() {
+	queue, err := c.ch.QueueDeclare(pkg.QUEUE_LIKE_TOTAL, true, false, false, false, nil)
 	if err != nil {
 		panic(err)
 	}
@@ -78,17 +80,20 @@ func (c *PostConsumer) PostLike() {
 	}
 	go func() {
 		for x := range msgs {
-			consumer := new(dto.EventConsumer[dto.EventPostLikeConsumer])
+			consumer := new(dto.EventConsumer[dto.EventLikeTotalConsumer])
 			if err := json.Unmarshal(x.Body, consumer); err != nil {
 				c.logger.Error().Err(err).Msg("failed unmarshal to payload")
 				return
 			}
-			fmt.Println(consumer)
+			err := c.postService.PostLike(&consumer.Data)
+			if err != nil {
+				return
+			}
 		}
 	}()
 }
-func (c *PostConsumer) PostUnlike() {
-	queue, err := c.ch.QueueDeclare(pkg.QUEUE_POST_UNLIKE, true, false, false, false, nil)
+func (c *PostConsumer) CommentTotal() {
+	queue, err := c.ch.QueueDeclare(pkg.QUEUE_COMMENT_TOTAL, true, false, false, false, nil)
 	if err != nil {
 		panic(err)
 	}
@@ -98,52 +103,15 @@ func (c *PostConsumer) PostUnlike() {
 	}
 	go func() {
 		for x := range msgs {
-			consumer := new(dto.EventConsumer[dto.EventPostUnlikeConsumer])
+			consumer := new(dto.EventConsumer[dto.EventCommentTotalConsumer])
 			if err := json.Unmarshal(x.Body, consumer); err != nil {
 				c.logger.Error().Err(err).Msg("failed unmarshal to payload")
 				return
 			}
-			fmt.Println(consumer)
-		}
-	}()
-}
-func (c *PostConsumer) CommentIncrement() {
-	queue, err := c.ch.QueueDeclare(pkg.QUEUE_COMMENT_INCREMENT, true, false, false, false, nil)
-	if err != nil {
-		panic(err)
-	}
-	msgs, err := c.ch.Consume(queue.Name, "", true, false, false, false, nil)
-	if err != nil {
-		panic(err)
-	}
-	go func() {
-		for x := range msgs {
-			consumer := new(dto.EventConsumer[dto.EventCommentIncrementConsumer])
-			if err := json.Unmarshal(x.Body, consumer); err != nil {
-				c.logger.Error().Err(err).Msg("failed unmarshal to payload")
+			err := c.postService.CommentTotal(&consumer.Data)
+			if err != nil {
 				return
 			}
-			fmt.Println(consumer)
-		}
-	}()
-}
-func (c *PostConsumer) CommentDecrement() {
-	queue, err := c.ch.QueueDeclare(pkg.QUEUE_COMMENT_DECREMENT, true, false, false, false, nil)
-	if err != nil {
-		panic(err)
-	}
-	msgs, err := c.ch.Consume(queue.Name, "", true, false, false, false, nil)
-	if err != nil {
-		panic(err)
-	}
-	go func() {
-		for x := range msgs {
-			consumer := new(dto.EventConsumer[dto.EventCommentDecrementConsumer])
-			if err := json.Unmarshal(x.Body, consumer); err != nil {
-				c.logger.Error().Err(err).Msg("failed unmarshal to payload")
-				return
-			}
-			fmt.Println(consumer)
 		}
 	}()
 }

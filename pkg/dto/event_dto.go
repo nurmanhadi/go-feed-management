@@ -17,27 +17,15 @@ type EventPostConsumer struct {
 	UpdatedAt    time.Time `json:"updated_at"`
 }
 type EventPostUpdatedConsumer struct {
-	PostId       int64     `json:"post_id"`
-	UserId       int64     `json:"user_id"`
-	Description  string    `json:"description"`
-	TotalLike    int       `json:"total_like"`
-	TotalComment int       `json:"total_comment"`
-	CreatedAt    time.Time `json:"created_at"`
-	UpdatedAt    time.Time `json:"updated_at"`
+	PostId      int64     `json:"post_id"`
+	Description string    `json:"description"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
-type EventPostLikeConsumer struct {
+type EventLikeTotalConsumer struct {
 	PostId int64 `json:"post_id"`
-	Total  int   `json:"total"`
+	Total  bool  `json:"total"`
 }
-type EventPostUnlikeConsumer struct {
+type EventCommentTotalConsumer struct {
 	PostId int64 `json:"post_id"`
-	Total  int   `json:"total"`
-}
-type EventCommentIncrementConsumer struct {
-	PostId int64 `json:"post_id"`
-	Total  int   `json:"total"`
-}
-type EventCommentDecrementConsumer struct {
-	PostId int64 `json:"post_id"`
-	Total  int   `json:"total"`
+	Total  bool  `json:"total"`
 }

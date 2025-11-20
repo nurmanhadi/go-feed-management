@@ -7,7 +7,6 @@ import (
 
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
-	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 type PostRepository struct {
@@ -26,9 +25,8 @@ func (r *PostRepository) Create(post *entity.Post) error {
 }
 func (r *PostRepository) FindOne(postId int64) (*entity.Post, error) {
 	filter := bson.D{{Key: "post_id", Value: postId}}
-	opt := options.FindOne().SetSkip(2)
 	post := new(entity.Post)
-	err := r.db.Collection(pkg.COLLECTION_POSTS).FindOne(context.Background(), filter, opt).Decode(post)
+	err := r.db.Collection(pkg.COLLECTION_POSTS).FindOne(context.Background(), filter).Decode(post)
 	if err != nil {
 		return nil, err
 	}
