@@ -2,6 +2,9 @@ package config
 
 import (
 	"feed-management/delivery/messaging/consumer"
+	"feed-management/delivery/rest/handler"
+	"feed-management/delivery/rest/middleware"
+	"feed-management/delivery/rest/routes"
 	"feed-management/internal/repository"
 	"feed-management/internal/service"
 
@@ -32,12 +35,20 @@ func Initialize(deps *Bootstrap) {
 
 	// service
 	postServ := service.NewPostService(deps.Logger, deps.Validator, postRepo)
+	feedServ := service.NewFeedService(deps.Logger, deps.Validator, postRepo)
 
 	// handler
+	feedHand := handler.NewFeedHandler(feedServ)
 
 	// middleware
+	deps.Router.Use(middleware.ErrorHandler)
 
 	// routes
+	r := routes.Router{
+		Router:      deps.Router,
+		FeedHandler: feedHand,
+	}
+	r.New()
 
 	// subcriber
 	postSubs := consumer.NewPostConsumer(deps.Logger, deps.Ch, postServ)

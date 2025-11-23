@@ -4,6 +4,7 @@ import (
 	"context"
 	"feed-management/internal/entity"
 	"feed-management/pkg"
+	"feed-management/pkg/algoritm"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
@@ -39,4 +40,16 @@ func (r *PostRepository) ReplaceOne(post *entity.Post) error {
 		return err
 	}
 	return nil
+}
+func (r *PostRepository) FindForYou() ([]entity.Post, error) {
+	cursor, err := r.db.Collection(pkg.COLLECTION_POSTS).Aggregate(context.Background(), algoritm.ForYou())
+	if err != nil {
+		return nil, err
+	}
+	var posts []entity.Post
+	err = cursor.All(context.Background(), &posts)
+	if err != nil {
+		return nil, err
+	}
+	return posts, nil
 }
