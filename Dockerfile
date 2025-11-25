@@ -8,5 +8,5 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o app ./main.go
 FROM docker.io/library/debian:stable-slim
 WORKDIR /app
 COPY --from=builder /app/app .
-EXPOSE 3002
+EXPOSE 3003
 CMD [ "./app" ]
